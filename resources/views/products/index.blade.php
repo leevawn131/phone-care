@@ -119,7 +119,7 @@
                 'brand' => $product->brand?->name ?? 'Khác',
                 'image' => method_exists($product, 'getPrimaryImageUrl')
                     ? $product->getPrimaryImageUrl()
-                    : 'https://placehold.co/600x600/e5e7eb/1f2937?text=Accessory',
+                    : 'https://placehold.co/600x600/e5e7eb/1f2937?text=Hinh+san+pham',
                 'price' => $price,
                 'original_price' => $originalPrice,
                 'warranty' => 'Bảo hành '.($product->base_warranty_months ?: 12).' tháng',
@@ -276,7 +276,7 @@
                 @foreach ($realProducts as $item)
                     <article class="group rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                         <a href="{{ $item['slug'] }}" class="relative block overflow-hidden rounded-xl bg-gray-100">
-                            <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="aspect-square w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e5e7eb/1f2937?text=Accessory';">
+                            <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="aspect-square w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e5e7eb/1f2937?text=Hinh+san+pham';">
                             <div class="absolute left-3 top-3 flex flex-col gap-2">
                                 @if (($item['saving_percent'] ?? 0) > 0)
                                     <span class="rounded-lg bg-red-500 px-2 py-1 text-xs font-semibold text-white">Tiết kiệm {{ $item['saving_percent'] }}%</span>
@@ -333,8 +333,32 @@
             </div>
 
             @if (isset($products) && method_exists($products, 'hasPages') && $products->hasPages())
-                <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-                    {{ $products->links() }}
+                <div class="relative z-10 mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <nav class="flex flex-wrap items-center justify-center gap-2" aria-label="Phân trang sản phẩm">
+                        @if ($products->onFirstPage())
+                            <span class="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-400">Trang trước</span>
+                        @else
+                            <a href="{{ $products->previousPageUrl() }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-blue-600 hover:text-blue-600">
+                                Trang trước
+                            </a>
+                        @endif
+
+                        @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
+                            @if ($page === $products->currentPage())
+                                <span class="rounded-lg border border-blue-600 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-600">{{ $page }}</span>
+                            @else
+                                <a href="{{ $url }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-blue-600 hover:text-blue-600">{{ $page }}</a>
+                            @endif
+                        @endforeach
+
+                        @if ($products->hasMorePages())
+                            <a href="{{ $products->nextPageUrl() }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-blue-600 hover:text-blue-600">
+                                Trang sau
+                            </a>
+                        @else
+                            <span class="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-400">Trang sau</span>
+                        @endif
+                    </nav>
                 </div>
             @endif
         </section>

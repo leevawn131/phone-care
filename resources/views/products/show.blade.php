@@ -10,7 +10,7 @@
     <section class="grid gap-8 lg:grid-cols-[1.05fr,0.95fr]">
         <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
             <div class="overflow-hidden rounded-2xl bg-gray-100">
-                <img src="{{ $product->getPrimaryImageUrl() }}" alt="{{ $product->name }}" class="aspect-square w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/800x800/e5e7eb/1f2937?text=Accessory';">
+                <img src="{{ $product->getPrimaryImageUrl() }}" alt="{{ $product->name }}" class="aspect-square w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/800x800/e5e7eb/1f2937?text=Hinh+san+pham';">
             </div>
         </div>
 
@@ -149,7 +149,7 @@
                     @php($relatedVariant = $relatedProduct->getDefaultVariant())
                     <article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md">
                         <a href="{{ route('products.show', $relatedProduct->slug) }}" class="block aspect-square overflow-hidden bg-gray-100">
-                            <img src="{{ $relatedProduct->getPrimaryImageUrl() }}" alt="{{ $relatedProduct->name }}" class="h-full w-full object-cover transition duration-500 hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e5e7eb/1f2937?text=Accessory';">
+                            <img src="{{ $relatedProduct->getPrimaryImageUrl() }}" alt="{{ $relatedProduct->name }}" class="h-full w-full object-cover transition duration-500 hover:scale-105" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e5e7eb/1f2937?text=Hinh+san+pham';">
                         </a>
                         <div class="p-4">
                             <p class="text-xs uppercase tracking-[0.18em] text-gray-500">{{ $relatedProduct->category?->name ?? 'Phụ kiện' }}</p>

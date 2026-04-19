@@ -66,7 +66,7 @@
                     @foreach ($cartItems as $item)
                         <article class="grid gap-5 rounded-lg border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md sm:grid-cols-[140px,1fr]">
                             <a href="{{ route('products.show', $item['slug']) }}" class="overflow-hidden rounded-lg bg-gray-100">
-                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="h-full w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/320x320/e5e7eb/1f2937?text=Accessory';">
+                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="h-full w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/320x320/e5e7eb/1f2937?text=Hinh+san+pham';">
                             </a>
 
                             <div class="flex flex-col gap-4">

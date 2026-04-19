@@ -10,12 +10,12 @@
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                        {{ __('Bảng điều khiển') }}
                     </x-nav-link>
 
                     @if (Auth::user()->role === 'admin')
                         <x-nav-link :href="url('/admin')" :active="request()->is('admin') || request()->is('admin/*')">
-                            {{ __('Admin Panel') }}
+                            {{ __('Trang quản trị') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -37,7 +37,7 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Hồ sơ') }}
                         </x-dropdown-link>
 
                         <form method="POST" action="{{ route('logout') }}">
@@ -46,7 +46,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Đăng xuất') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -67,12 +67,12 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+                {{ __('Bảng điều khiển') }}
             </x-responsive-nav-link>
 
             @if (Auth::user()->role === 'admin')
                 <x-responsive-nav-link :href="url('/admin')" :active="request()->is('admin') || request()->is('admin/*')">
-                    {{ __('Admin Panel') }}
+                    {{ __('Trang quản trị') }}
                 </x-responsive-nav-link>
             @endif
         </div>
@@ -85,7 +85,7 @@
 
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                    {{ __('Hồ sơ') }}
                 </x-responsive-nav-link>
 
                 <form method="POST" action="{{ route('logout') }}">
@@ -94,7 +94,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('Đăng xuất') }}
                     </x-responsive-nav-link>
                 </form>
             </div>

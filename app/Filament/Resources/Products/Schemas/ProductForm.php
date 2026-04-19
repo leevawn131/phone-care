@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Models\Brand;
 use App\Models\ProductVariant;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -34,6 +35,24 @@ class ProductForm
                             ->searchable()
                             ->preload()
                             ->native(false)
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label('Tên thương hiệu')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn (Set $set, ?string $state): mixed => $set('slug', Str::slug($state))),
+                                TextInput::make('slug')
+                                    ->label('Slug')
+                                    ->required()
+                                    ->alphaDash()
+                                    ->maxLength(255)
+                                    ->unique('brands', 'slug'),
+                                Toggle::make('is_active')
+                                    ->label('Kích hoạt')
+                                    ->default(true),
+                            ])
+                            ->createOptionUsing(fn (array $data): int => Brand::query()->create($data)->getKey())
                             ->required(),
                         TextInput::make('name')
                             ->required()

@@ -107,7 +107,7 @@ class Product extends Model
     public function getPrimaryImageUrl(): string
     {
         return $this->getPrimaryImage()?->url
-            ?? 'https://placehold.co/900x900/f8fafc/0f172a?text=Accessory';
+            ?? 'https://placehold.co/900x900/f8fafc/0f172a?text=Hinh+san+pham';
     }
 
     public function getDisplayPrice(): int

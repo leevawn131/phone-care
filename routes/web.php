@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -54,5 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/address', [ProfileController::class, 'updateAddress'])->name('profile.update-address');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::post('/chat', [ChatbotController::class, 'chatbot']);
+Route::get('/chat/history', [ChatbotController::class, 'history']);
 
 require __DIR__.'/auth.php';

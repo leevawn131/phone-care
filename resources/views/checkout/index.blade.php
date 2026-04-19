@@ -5,7 +5,7 @@
                 'id' => (string) ($item['id'] ?? $item['variant_id'] ?? ($index + 1)),
                 'name' => $item['name'] ?? 'Phụ kiện điện thoại cao cấp',
                 'variant_name' => $item['variant_name'] ?: 'Phiên bản tiêu chuẩn',
-                'image' => $item['image'] ?? 'https://placehold.co/160x160/e5e7eb/1f2937?text=Accessory',
+                'image' => $item['image'] ?? 'https://placehold.co/160x160/e5e7eb/1f2937?text=Hinh+san+pham',
                 'price' => (int) ($item['price'] ?? 0),
                 'quantity' => (int) ($item['quantity'] ?? 1),
                 'warranty_months' => (int) ($item['warranty_months'] ?? 12),
@@ -382,7 +382,7 @@
                         @foreach ($checkoutItems as $item)
                             <article class="grid gap-4 px-5 py-5 md:grid-cols-[1.6fr,0.8fr,0.7fr,0.9fr] md:items-center">
                                 <div class="flex gap-4">
-                                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="h-24 w-24 rounded-lg border border-gray-100 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/160x160/e5e7eb/1f2937?text=Accessory';">
+                                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="h-24 w-24 rounded-lg border border-gray-100 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/160x160/e5e7eb/1f2937?text=Hinh+san+pham';">
                                     <div class="min-w-0">
                                         <p class="text-sm font-semibold leading-6 text-gray-900">{{ $item['name'] }}</p>
                                         <p class="mt-1 text-xs text-gray-500">Phân loại: {{ $item['variant_name'] }}</p>

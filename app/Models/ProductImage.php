@@ -52,13 +52,13 @@ class ProductImage extends Model
     public function getUrlAttribute(): string
     {
         if (! $this->path) {
-            return 'https://placehold.co/900x900/f8fafc/0f172a?text=Accessory';
+            return 'https://placehold.co/900x900/f8fafc/0f172a?text=Hinh+san+pham';
         }
 
         if (Str::startsWith($this->path, ['http://', 'https://'])) {
             return $this->path;
         }
 
-        return Storage::disk('public')->url($this->path);
+        return Storage::url($this->path);
     }
 }
