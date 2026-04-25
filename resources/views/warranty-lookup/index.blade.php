@@ -1,23 +1,22 @@
-@extends('layout')
-
-@section('title', 'Tra cứu bảo hành')
+@extends('layouts.shop')
 
 @section('content')
-    <section class="mx-auto max-w-5xl">
-        <div class="rounded-2xl bg-gradient-to-r from-blue-600 via-blue-600 to-sky-500 px-6 py-10 text-center text-white shadow-sm sm:px-10">
-            <span class="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.26em] text-blue-50">
+    <div class="container mt-5 mb-5">
+    <section class="mx-auto">
+        <div class="rounded-2 bg-primary text-white p-5 text-center">
+            <span class="badge bg-light text-primary" style="border: 1px solid rgba(255,255,255,0.3)">
                 Tra cứu bảo hành
             </span>
-            <h1 class="mt-5 text-3xl font-bold sm:text-5xl">Tra cứu thông tin bảo hành</h1>
-            <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-blue-50 sm:text-base">
+            <h1 class="mt-4 fw-bold" style="font-size: 2rem;">Tra cứu thông tin bảo hành</h1>
+            <p class="mx-auto mt-3" style="max-width: 42rem; font-size: 0.875rem; line-height: 1.75;">
                 Nhập số điện thoại khách hàng hoặc mã serial number để kiểm tra tình trạng bảo hành, thời gian còn lại và thông tin mua hàng.
             </p>
 
-            <form method="POST" action="{{ route('warranty-lookup.search') }}" class="mx-auto mt-8 max-w-3xl">
+            <form method="POST" action="{{ route('warranty-lookup.search') }}" class="mx-auto mt-4" style="max-width: 42rem;">
                 @csrf
-                <div class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/10 p-3 shadow-sm sm:flex-row sm:items-center">
-                    <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-white text-blue-600">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <div class="d-flex gap-2">
+                    <div class="d-flex justify-content-center align-items-center rounded-2" style="width: 56px; height: 56px; background-color: white; color: #2563eb; flex-shrink: 0;">
+                        <svg class="" style="width: 24px; height: 24px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.3-4.3"></path>
                         </svg>
@@ -27,15 +26,15 @@
                         name="search_query"
                         value="{{ $searchQuery }}"
                         placeholder="Ví dụ: 0900000000 hoặc PX-ABC123XYZ"
-                        class="h-14 flex-1 rounded-xl border border-white/20 bg-white px-5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-white focus:outline-none focus:ring-0"
+                        class="form-control form-control-sm"
                     >
-                    <button type="submit" class="inline-flex h-14 items-center justify-center rounded-xl bg-blue-900 px-8 text-sm font-bold text-white transition hover:bg-slate-900">
+                    <button type="submit" class="btn btn-dark btn-sm fw-bold">
                         Tìm kiếm
                     </button>
                 </div>
             </form>
 
-            <div class="mt-4 text-xs uppercase tracking-[0.22em] text-blue-100">
+            <div class="mt-3 text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.15em;">
                 Tìm theo {{ $hasSearched ? ($searchType === 'phone' ? 'số điện thoại' : 'serial number') : 'số điện thoại hoặc serial number' }}
             </div>
         </div>
@@ -51,7 +50,7 @@
                         <p class="text-sm text-gray-500">Trạng thái hết hạn sẽ được cập nhật dựa trên ngày kết thúc.</p>
                     </div>
 
-                    <div class="grid gap-6 lg:grid-cols-2">
+                    <div class="row row-cols-1 row-cols-lg-2 g-4">
                         @foreach ($results as $warranty)
                             @php
                                 $status = strtolower((string) $warranty->status);
@@ -70,34 +69,36 @@
                                 $remainingDays = $warranty->remaining_days;
                             @endphp
 
-                            <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                                <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                                    <div>
-                                        <p class="text-xs uppercase tracking-[0.2em] text-gray-500">Sản phẩm</p>
-                                        <h3 class="mt-2 text-2xl font-bold text-gray-900">{{ $warranty->product_display_name }}</h3>
+                            <article class="col">
+            <div class="card rounded-2">
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Sản phẩm</p>
+                                            <h3 class="mt-2 fw-bold" style="font-size: 1.5rem;">{{ $warranty->product_display_name }}</h3>
+                                        </div>
+                                        <span class="badge" style="border: 1px solid; {{ str_contains($badgeClasses, 'emerald') ? 'background-color: #ecfdf5; color: #047857; border-color: #a7f3d0;' : (str_contains($badgeClasses, 'red') ? 'background-color: #fef2f2; color: #991b1b; border-color: #fecaca;' : 'background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd;') }} ">
+                                            {{ $statusLabel }}
+                                        </span>
                                     </div>
-                                    <span class="inline-flex rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] {{ $badgeClasses }}">
-                                        {{ $statusLabel }}
-                                    </span>
-                                </div>
 
-                                <div class="mt-5 grid gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-5 sm:grid-cols-2">
-                                    <div>
-                                        <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Mã serial</p>
-                                        <p class="mt-2 font-mono text-lg font-semibold text-blue-600">{{ $warranty->serial_display }}</p>
+                                <div class="mt-4 row gap-3 rounded-2 border border-1" style="border-color: #e5e7eb; background-color: #f9fafb; padding: 1.25rem;">
+                                    <div class="col-md-6">
+                                        <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Mã serial</p>
+                                        <p class="mt-2 fw-bold" style="font-family: monospace; font-size: 1.125rem; color: #2563eb;">{{ $warranty->serial_display }}</p>
                                     </div>
-                                    <div>
-                                        <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Ngày mua</p>
-                                        <p class="mt-2 text-lg font-semibold text-gray-900">{{ $warranty->purchase_date_display ?? 'N/A' }}</p>
+                                    <div class="col-md-6">
+                                        <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Ngày mua</p>
+                                        <p class="mt-2 fw-bold" style="color: #111827;">{{ $warranty->purchase_date_display ?? 'N/A' }}</p>
                                     </div>
-                                    <div>
-                                        <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Thời hạn</p>
-                                        <p class="mt-2 text-sm font-semibold text-gray-900">
+                                    <div class="col-md-6">
+                                        <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Thời hạn</p>
+                                        <p class="mt-2 fw-bold text-sm text-muted">
                                             {{ $warranty->activated_at_display ?? 'N/A' }} - {{ $warranty->expires_at_display ?? 'N/A' }}
                                         </p>
                                     </div>
-                                    <div>
-                                        <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Đơn hàng</p>
+                                    <div class="col-md-6">
+                                        <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Đơn hàng</p>
                                         <p class="mt-2 text-sm font-semibold text-gray-900">{{ $warranty->orderItem?->order?->order_number ?? 'N/A' }}</p>
                                     </div>
                                 </div>

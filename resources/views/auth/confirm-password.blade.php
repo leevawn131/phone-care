@@ -1,27 +1,38 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Đây là khu vực bảo mật của hệ thống. Vui lòng xác nhận mật khẩu trước khi tiếp tục.') }}
+@extends('layouts.shop')
+
+@section('title', 'Xác nhận mật khẩu')
+
+@section('content')
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card border-0 rounded-2 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h1 class="fw-bold mb-3" style="font-size: 1.5rem;">Xác nhận mật khẩu</h1>
+                        <p class="text-muted" style="font-size: 0.875rem;">
+                            {{ __('Đây là khu vực bảo mật của hệ thống. Vui lòng xác nhận mật khẩu trước khi tiếp tục.') }}
+                        </p>
+
+                        <form method="POST" action="{{ route('password.confirm') }}">
+                            @csrf
+
+                            <div>
+                                <label for="password" class="form-label fw-bold" style="font-size: 0.875rem;">Mật khẩu</label>
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                                @error('password')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="submit" class="btn btn-primary fw-bold">
+                                    {{ __('Xác nhận') }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <form method="POST" action="{{ route('password.confirm') }}">
-        @csrf
-
-        <!-- Mật khẩu -->
-        <div>
-            <x-input-label for="password" :value="__('Mật khẩu')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Xác nhận') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+@endsection

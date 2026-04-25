@@ -1,4 +1,4 @@
-﻿@extends('layout')
+﻿@extends('layouts.shop')
 
 @php
     $dummyProducts = collect([
@@ -163,219 +163,212 @@
 @endpush
 
 @section('content')
-    <div class="mb-6 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-600 to-sky-500 px-6 py-6 text-white shadow-sm">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-                <p class="text-sm font-medium text-blue-100">Storefront cho phụ kiện điện thoại</p>
-                <h1 class="mt-2 text-3xl font-bold sm:text-4xl">Phụ kiện cho điện thoại của bạn</h1>
-                <p class="mt-3 max-w-2xl text-sm leading-7 text-blue-50">
-                    Chọn nhanh ốp lưng, cáp sạc, tai nghe và các phụ kiện bán chạy. Mỗi sản phẩm đều hiển thị rõ thời hạn bảo hành để dễ quyết định hơn.
-                </p>
+    <header class="bg-dark py-5 mb-5">
+        <div class="container px-4 px-lg-5 my-4">
+            <div class="text-center text-white">
+                <p class="lead fw-normal text-white-50 mb-2">Storefront cho phụ kiện điện thoại</p>
+                <h1 class="display-5 fw-bolder">Phụ kiện cho điện thoại của bạn</h1>
+                <p class="lead fw-normal text-white-50 mb-0">Chọn nhanh ốp lưng, cáp sạc, tai nghe và các phụ kiện bán chạy. Mỗi sản phẩm đều hiển thị rõ thời hạn bảo hành để dễ quyết định hơn.</p>
             </div>
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div class="rounded-xl bg-white/10 px-4 py-3">
-                    <p class="text-xs uppercase tracking-[0.22em] text-blue-100">Sản phẩm</p>
-                    <p class="mt-1 text-2xl font-bold">{{ $realProducts->count() }}</p>
+        </div>
+    </header>
+
+    <section class="container px-4 px-lg-5 mb-5">
+        <div class="row g-3 row-cols-1 row-cols-md-3">
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <p class="text-uppercase text-muted small mb-2">Sản phẩm</p>
+                        <h2 class="fw-bolder mb-0">{{ $realProducts->count() }}</h2>
+                    </div>
                 </div>
-                <div class="rounded-xl bg-white/10 px-4 py-3">
-                    <p class="text-xs uppercase tracking-[0.22em] text-blue-100">Danh mục</p>
-                    <p class="mt-1 text-2xl font-bold">{{ count($categories) }}</p>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <p class="text-uppercase text-muted small mb-2">Danh mục</p>
+                        <h2 class="fw-bolder mb-0">{{ count($categories) }}</h2>
+                    </div>
                 </div>
-                <div class="rounded-xl bg-white/10 px-4 py-3">
-                    <p class="text-xs uppercase tracking-[0.22em] text-blue-100">Bảo hành</p>
-                    <p class="mt-1 text-2xl font-bold">6-24+</p>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <p class="text-uppercase text-muted small mb-2">Bảo hành</p>
+                        <h2 class="fw-bolder mb-0">6-24+</h2>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="grid gap-6 lg:grid-cols-[280px,1fr] xl:grid-cols-[300px,1fr]">
-        <aside class="space-y-4">
-            <form method="GET" action="{{ route('products.index') }}" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm" x-data="productFilters({
-                priceValue: {{ $maxPrice === null ? (int) $maxPriceLimit : (int) $maxPrice }},
-                maxLimit: {{ (int) $maxPriceLimit }},
-            })">
-                <input type="hidden" name="sort" value="{{ $currentSort }}">
-                <input type="hidden" name="min_price" value="0">
-                <input type="hidden" name="max_price" :value="priceValue">
-                <div class="mb-4 flex items-center justify-between">
-                    <h2 class="text-sm font-bold uppercase tracking-[0.2em] text-gray-800">Bộ lọc</h2>
-                    <a href="{{ route('products.index', ['sort' => $currentSort]) }}" class="text-xs font-medium text-blue-600">Đặt lại</a>
-                </div>
-
-                <div class="border-t border-gray-100 pt-4">
-                    <p class="text-sm font-semibold text-gray-900">Khoảng giá</p>
-                    <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
-                        <span x-text="formatCurrency(priceValue)"></span>
-                        <span x-text="formatCurrency(maxLimit)"></span>
+    <section class="container px-4 px-lg-5">
+        <div class="row g-4">
+            <aside class="col-lg-3">
+                <form method="GET" action="{{ route('products.index') }}" class="card shadow-sm sticky-lg-top" style="top: 1rem;" x-data="{
+                    priceValue: {{ $maxPrice === null ? (int) $maxPriceLimit : (int) $maxPrice }},
+                    maxLimit: {{ (int) $maxPriceLimit }},
+                    formatCurrency(value) {
+                        return new Intl.NumberFormat('vi-VN').format(Number(value || 0)) + ' VND';
+                    },
+                }">
+                    <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                        <span class="fw-semibold text-uppercase small">Bộ lọc</span>
+                        <a href="{{ route('products.index', ['sort' => $currentSort]) }}" class="small text-decoration-none">Đặt lại</a>
                     </div>
-                    <div class="mt-4 space-y-3">
-                        <input type="range" min="0" :max="maxLimit" step="10000" x-model.number="priceValue" class="w-full accent-blue-600">
+                    <div class="card-body">
+                        <input type="hidden" name="sort" value="{{ $currentSort }}">
+                        <input type="hidden" name="min_price" value="0">
+                        <input type="hidden" name="max_price" :value="priceValue">
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Khoảng giá</label>
+                            <div class="d-flex justify-content-between small text-muted mb-2">
+                                <span x-text="formatCurrency(priceValue)"></span>
+                                <span x-text="formatCurrency(maxLimit)"></span>
+                            </div>
+                            <input type="range" min="0" :max="maxLimit" step="10000" x-model.number="priceValue" class="form-range">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Danh mục</label>
+                            <div class="d-grid gap-2">
+                                @foreach ($categories as $category)
+                                    <label class="form-check border rounded px-3 py-2 mb-0">
+                                        <input type="checkbox" name="categories[]" value="{{ $category->id }}" @checked(in_array((string) $category->id, $selectedCategoryIds, true)) class="form-check-input">
+                                        <span class="form-check-label ms-2">{{ $category->name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Thương hiệu</label>
+                            <div class="row g-2">
+                                @foreach ($brands as $brand)
+                                    <div class="col-6">
+                                        <label class="form-check border rounded px-3 py-2 mb-0 h-100">
+                                            <input type="checkbox" name="brands[]" value="{{ $brand->id }}" @checked(in_array((string) $brand->id, $selectedBrandIds, true)) class="form-check-input">
+                                            <span class="form-check-label ms-2">{{ $brand->name }}</span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Bảo hành</label>
+                            <div class="d-grid gap-2">
+                                @foreach ($warrantyOptions as $option)
+                                    <label class="form-check border rounded px-3 py-2 mb-0">
+                                        <input type="checkbox" name="warranties[]" value="{{ $option }}" @checked(in_array((string) $option, $selectedWarrantyMonths, true)) class="form-check-input">
+                                        <span class="form-check-label ms-2">{{ $option === 0 ? 'Trọn đời' : $option.' tháng' }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100">Áp dụng</button>
+                    </div>
+                </form>
+            </aside>
+
+            <div class="col-lg-9">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body d-flex flex-column flex-lg-row gap-3 align-items-lg-center justify-content-between">
+                        <div>
+                            <p class="mb-1 fw-semibold">Danh sách sản phẩm</p>
+                            <p class="mb-0 text-muted small">Hiển thị {{ $realProducts->count() }} sản phẩm phù hợp</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach ($sortOptions as $sortKey => $option)
+                                <a href="{{ route('products.index', array_merge(request()->except(['sort', 'page']), ['sort' => $sortKey])) }}" class="btn btn-sm {{ $currentSort === $sortKey ? 'btn-dark' : 'btn-outline-dark' }}">
+                                    {{ $option }}
+                                </a>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
 
-                <div class="mt-5 border-t border-gray-100 pt-4">
-                    <p class="text-sm font-semibold text-gray-900">Danh mục</p>
-                    <div class="mt-3 space-y-3 text-sm text-gray-700">
-                        @foreach ($categories as $category)
-                            <label class="flex items-center gap-3">
-                                <input type="checkbox" name="categories[]" value="{{ $category->id }}" @checked(in_array((string) $category->id, $selectedCategoryIds, true)) class="rounded border-gray-300 text-blue-600 focus:ring-blue-600">
-                                <span>{{ $category->name }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="mt-5 border-t border-gray-100 pt-4">
-                    <p class="text-sm font-semibold text-gray-900">Thương hiệu</p>
-                    <div class="mt-3 grid grid-cols-2 gap-3 text-sm text-gray-700">
-                        @foreach ($brands as $brand)
-                            <label class="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 hover:border-blue-600 hover:text-blue-600">
-                                <input type="checkbox" name="brands[]" value="{{ $brand->id }}" @checked(in_array((string) $brand->id, $selectedBrandIds, true)) class="rounded border-gray-300 text-blue-600 focus:ring-blue-600">
-                                <span>{{ $brand->name }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="mt-5 border-t border-gray-100 pt-4">
-                    <p class="text-sm font-semibold text-gray-900">Bảo hành</p>
-                    <div class="mt-3 space-y-3 text-sm text-gray-700">
-                        @foreach ($warrantyOptions as $option)
-                            <label class="flex items-center gap-3">
-                                <input type="checkbox" name="warranties[]" value="{{ $option }}" @checked(in_array((string) $option, $selectedWarrantyMonths, true)) class="rounded border-gray-300 text-blue-600 focus:ring-blue-600">
-                                <span>{{ $option === 0 ? 'Trọn đời' : $option.' tháng' }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-                <div class="mt-6 flex items-center gap-3">
-                    <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700">
-                        Áp dụng
-                    </button>
-                </div>
-            </form>
-        </aside>
-
-        <section>
-            <div class="mb-4 flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <p class="text-sm font-semibold text-gray-900">Danh sách sản phẩm</p>
-                    <p class="text-xs text-gray-500">Hiển thị {{ $realProducts->count() }} sản phẩm phù hợp</p>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    @foreach ($sortOptions as $sortKey => $option)
-                        <a href="{{ route('products.index', array_merge(request()->except(['sort', 'page']), ['sort' => $sortKey])) }}" class="rounded-lg border px-3 py-2 text-sm font-medium transition {{ $currentSort === $sortKey ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-200 bg-white text-gray-600 hover:border-blue-600 hover:text-blue-600' }}">
-                            {{ $option }}
-                        </a>
+                <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-4 justify-content-center">
+                    @foreach ($realProducts as $item)
+                        <div class="col mb-5">
+                            <div class="card h-100 shadow-sm">
+                                <a href="{{ $item['slug'] }}" class="position-relative text-decoration-none text-reset">
+                                    <img class="card-img-top" src="{{ $item['image'] }}" alt="{{ $item['name'] }}" style="aspect-ratio: 1 / 1; object-fit: cover;" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e5e7eb/1f2937?text=Hinh+san+pham';">
+                                    <div class="position-absolute top-0 start-0 p-3 d-flex flex-column gap-2">
+                                        @if (($item['saving_percent'] ?? 0) > 0)
+                                            <span class="badge bg-danger">Tiết kiệm {{ $item['saving_percent'] }}%</span>
+                                        @endif
+                                        @if ($item['is_new'])
+                                            <span class="badge bg-primary">Mới</span>
+                                        @endif
+                                    </div>
+                                </a>
+                                <div class="card-body p-4">
+                                    <div class="text-center">
+                                        <p class="text-muted small mb-1">{{ $item['category'] }} · {{ $item['brand'] }}</p>
+                                        <h5 class="fw-bolder line-clamp-2-safe">{{ $item['name'] }}</h5>
+                                        <div class="mt-3 mb-2">
+                                            <span class="fw-bold text-dark fs-5">{{ number_format($item['price']) }} VND</span>
+                                            @if (($item['original_price'] ?? 0) > $item['price'])
+                                                <span class="text-muted text-decoration-line-through ms-2">{{ number_format($item['original_price']) }} VND</span>
+                                            @endif
+                                        </div>
+                                        <div class="small text-muted">{{ $item['warranty'] }}</div>
+                                        <p class="text-muted small mt-3 mb-0">Hàng chính hãng, đổi mới nhanh khi lỗi do nhà sản xuất và được kích hoạt bảo hành theo serial riêng.</p>
+                                    </div>
+                                </div>
+                                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                    <div class="d-grid gap-2">
+                                        <a href="{{ $item['slug'] }}" class="btn btn-outline-dark">Xem chi tiết</a>
+                                        @if ($item['cart_url'] !== '#')
+                                            <form method="POST" action="{{ $item['cart_url'] }}">
+                                                @csrf
+                                                @if (! empty($item['variant_id']))
+                                                    <input type="hidden" name="variant_id" value="{{ $item['variant_id'] }}">
+                                                @endif
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn btn-dark w-100">Thêm vào giỏ</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
                 </div>
-            </div>
 
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                @foreach ($realProducts as $item)
-                    <article class="group rounded-2xl border border-gray-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                        <a href="{{ $item['slug'] }}" class="relative block overflow-hidden rounded-xl bg-gray-100">
-                            <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="aspect-square w-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x600/e5e7eb/1f2937?text=Hinh+san+pham';">
-                            <div class="absolute left-3 top-3 flex flex-col gap-2">
-                                @if (($item['saving_percent'] ?? 0) > 0)
-                                    <span class="rounded-lg bg-red-500 px-2 py-1 text-xs font-semibold text-white">Tiết kiệm {{ $item['saving_percent'] }}%</span>
-                                @endif
-                                @if ($item['is_new'])
-                                    <span class="rounded-lg bg-blue-600 px-2 py-1 text-xs font-semibold text-white">Mới</span>
-                                @endif
-                            </div>
-                        </a>
-
-                        <div class="mt-3 flex items-center justify-between text-xs text-gray-500">
-                            <span>{{ $item['category'] }}</span>
-                            <span>{{ $item['brand'] }}</span>
-                        </div>
-
-                        <h3 class="mt-2 min-h-[3.5rem] text-sm font-semibold leading-6 text-gray-900 line-clamp-2-safe">
-                            {{ $item['name'] }}
-                        </h3>
-
-                        <div class="mt-3 flex items-end gap-2">
-                            <span class="text-xl font-bold text-blue-600">{{ number_format($item['price']) }} VND</span>
-                            @if (($item['original_price'] ?? 0) > $item['price'])
-                                <span class="text-sm text-gray-400 line-through">{{ number_format($item['original_price']) }} VND</span>
+                @if (isset($products) && method_exists($products, 'hasPages') && $products->hasPages())
+                    <nav class="mt-4" aria-label="Phân trang sản phẩm">
+                        <ul class="pagination justify-content-center flex-wrap gap-2">
+                            @if ($products->onFirstPage())
+                                <li class="page-item disabled"><span class="page-link">Trang trước</span></li>
+                            @else
+                                <li class="page-item"><a class="page-link" href="{{ $products->previousPageUrl() }}">Trang trước</a></li>
                             @endif
-                        </div>
 
-                        <div class="mt-3 space-y-2">
-                            <div class="inline-flex rounded-lg bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-                                {{ $item['warranty'] }}
-                            </div>
-                            <p class="text-xs leading-5 text-gray-500">Hàng chính hãng, đổi mới nhanh khi lỗi do nhà sản xuất và được kích hoạt bảo hành theo serial riêng.</p>
-                        </div>
-
-                        <div class="mt-4">
-                            @if ($item['cart_url'] !== '#')
-                                <form method="POST" action="{{ $item['cart_url'] }}">
-                                    @csrf
-                                    @if (! empty($item['variant_id']))
-                                        <input type="hidden" name="variant_id" value="{{ $item['variant_id'] }}">
+                            @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
+                                <li class="page-item {{ $page === $products->currentPage() ? 'active' : '' }}">
+                                    @if ($page === $products->currentPage())
+                                        <span class="page-link">{{ $page }}</span>
+                                    @else
+                                        <a class="page-link" href="{{ $url }}">{{ $page }}</a>
                                     @endif
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="w-full rounded-xl border border-blue-600 bg-white px-4 py-2.5 text-sm font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white">
-                                        Thêm vào giỏ
-                                    </button>
-                                </form>
+                                </li>
+                            @endforeach
+
+                            @if ($products->hasMorePages())
+                                <li class="page-item"><a class="page-link" href="{{ $products->nextPageUrl() }}">Trang sau</a></li>
                             @else
-                                <button type="button" class="w-full rounded-xl border border-blue-600 bg-white px-4 py-2.5 text-sm font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white">
-                                    Thêm vào giỏ
-                                </button>
+                                <li class="page-item disabled"><span class="page-link">Trang sau</span></li>
                             @endif
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-
-            @if (isset($products) && method_exists($products, 'hasPages') && $products->hasPages())
-                <div class="relative z-10 mt-6 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-                    <nav class="flex flex-wrap items-center justify-center gap-2" aria-label="Phân trang sản phẩm">
-                        @if ($products->onFirstPage())
-                            <span class="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-400">Trang trước</span>
-                        @else
-                            <a href="{{ $products->previousPageUrl() }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-blue-600 hover:text-blue-600">
-                                Trang trước
-                            </a>
-                        @endif
-
-                        @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
-                            @if ($page === $products->currentPage())
-                                <span class="rounded-lg border border-blue-600 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-600">{{ $page }}</span>
-                            @else
-                                <a href="{{ $url }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-blue-600 hover:text-blue-600">{{ $page }}</a>
-                            @endif
-                        @endforeach
-
-                        @if ($products->hasMorePages())
-                            <a href="{{ $products->nextPageUrl() }}" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-blue-600 hover:text-blue-600">
-                                Trang sau
-                            </a>
-                        @else
-                            <span class="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-400">Trang sau</span>
-                        @endif
+                        </ul>
                     </nav>
-                </div>
-            @endif
-        </section>
-    </div>
+                @endif
+            </div>
+        </div>
+    </section>
 @endsection
 
-@push('scripts')
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('productFilters', (config = {}) => ({
-                priceValue: Number(config.priceValue ?? 0),
-                maxLimit: Number(config.maxLimit ?? 2000000),
-                formatCurrency(value) {
-                    return new Intl.NumberFormat('vi-VN').format(Number(value || 0)) + ' VND';
-                },
-            }));
-        });
-    </script>
-@endpush
 

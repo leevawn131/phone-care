@@ -1,16 +1,15 @@
-@extends('layout')
-
-@section('title', 'Đơn mua của tôi')
+@extends('layouts.shop')
 
 @section('content')
-    <section class="mx-auto max-w-5xl">
-        <div class="rounded-2xl bg-gradient-to-r from-blue-600 via-blue-600 to-sky-500 px-6 py-10 text-white shadow-sm sm:px-10">
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-blue-100">Lịch sử mua hàng</p>
-            <h1 class="mt-3 text-3xl font-bold sm:text-4xl">Đơn mua của tôi</h1>
-            <p class="mt-4 max-w-2xl text-sm leading-7 text-blue-50">Theo dõi nhanh các đơn hàng đã tạo, tổng tiền thanh toán và trạng thái xử lý ngay trong khu vực tài khoản.</p>
+    <div class="container mt-5 mb-5">
+    <section class="mx-auto">
+        <div class="bg-primary text-white p-5 rounded-2 mb-4">
+            <p class="text-uppercase" style="font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em;">Lịch sử mua hàng</p>
+            <h1 class="mt-2 fw-bold" style="font-size: 2rem;">Đơn mua của tôi</h1>
+            <p class="mt-3" style="font-size: 0.875rem; line-height: 1.75;">Theo dõi nhanh các đơn hàng đã tạo, tổng tiền thanh toán và trạng thái xử lý ngay trong khu vực tài khoản.</p>
         </div>
 
-        <div class="mt-8 space-y-4">
+        <div class="mt-4">
             @forelse ($orders as $order)
                 @php
                     $status = strtolower((string) $order->status);
@@ -21,62 +20,67 @@
                         default => 'bg-amber-50 text-amber-700 border border-amber-200',
                     };
                 @endphp
-                <article class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <article class="card rounded-2 mb-3">
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-3 flex-lg-row justify-content-lg-between align-items-lg-start">
                         <div>
-                            <p class="text-xs uppercase tracking-[0.2em] text-gray-500">Mã đơn hàng</p>
-                            <p class="mt-2 text-2xl font-bold text-gray-900">{{ $order->order_number }}</p>
-                            <p class="mt-2 text-sm text-gray-500">Đặt ngày {{ optional($order->placed_at)->format('d/m/Y H:i') ?? optional($order->created_at)->format('d/m/Y H:i') }}</p>
+                            <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Mã đơn hàng</p>
+                            <p class="mt-2 fw-bold" style="font-size: 1.5rem; color: #111827;">{{ $order->order_number }}</p>
+                            <p class="mt-2" style="font-size: 0.875rem; color: #6b7280;">Đặt ngày {{ optional($order->placed_at)->format('d/m/Y H:i') ?? optional($order->created_at)->format('d/m/Y H:i') }}</p>
                         </div>
-                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] {{ $statusClasses }}">{{ $order->status }}</span>
+                        <span class="badge" style="border: 1px solid; {{ str_contains($statusClasses, 'emerald') ? 'background-color: #ecfdf5; color: #047857; border-color: #a7f3d0;' : (str_contains($statusClasses, 'blue') ? 'background-color: #eff6ff; color: #0369a1; border-color: #bae6fd;' : (str_contains($statusClasses, 'red') ? 'background-color: #fef2f2; color: #991b1b; border-color: #fecaca;' : 'background-color: #fef3c7; color: #92400e; border-color: #fcd34d;')) }} ">{{ $order->status }}</span>
                     </div>
 
-                    <div class="mt-5 grid gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-5 sm:grid-cols-3">
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Người nhận</p>
-                            <p class="mt-2 text-sm font-semibold text-gray-900">{{ $order->recipient_name }}</p>
-                            <p class="mt-1 text-sm text-gray-500">{{ $order->recipient_phone }}</p>
+                    <div class="mt-4 row gap-3 rounded-2 border border-1" style="border-color: #e5e7eb; background-color: #f9fafb; padding: 1.25rem;">
+                        <div class="col-md-4">
+                            <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Người nhận</p>
+                            <p class="mt-2 fw-bold" style="font-size: 0.875rem;">{{ $order->recipient_name }}</p>
+                            <p class="mt-1" style="font-size: 0.875rem; color: #6b7280;">{{ $order->recipient_phone }}</p>
                         </div>
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Tổng tiền</p>
-                            <p class="mt-2 text-lg font-bold text-blue-600">{{ number_format($order->grand_total) }} VND</p>
+                        <div class="col-md-4">
+                            <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Tổng tiền</p>
+                            <p class="mt-2 fw-bold" style="font-size: 1.125rem; color: #2563eb;">{{ number_format($order->grand_total) }} VND</p>
                         </div>
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.18em] text-gray-500">Số sản phẩm</p>
-                            <p class="mt-2 text-lg font-bold text-gray-900">{{ $order->items->sum('qty') }}</p>
+                        <div class="col-md-4">
+                            <p class="text-uppercase" style="font-size: 0.75rem; color: #9ca3af;">Số sản phẩm</p>
+                            <p class="mt-2 fw-bold" style="font-size: 1.125rem;">{{ $order->items->sum('qty') }}</p>
                         </div>
                     </div>
 
-                    <div class="mt-4 grid gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm sm:grid-cols-2">
-                        <p class="text-blue-800">
-                            Điểm đã dùng: <span class="font-bold">{{ number_format((int) ($order->points_redeemed ?? 0)) }}</span>
-                        </p>
-                        <p class="text-blue-800 sm:text-right">
-                            Điểm đã cộng: <span class="font-bold">{{ number_format((int) ($order->points_earned ?? 0)) }}</span>
-                        </p>
+                    <div class="mt-4 row gap-3 rounded-2 border border-1" style="border-color: #bfdbfe; background-color: #eff6ff; padding: 1rem; font-size: 0.875rem;">
+                        <div class="col-md-6" style="color: #1e40af;">
+                            Điểm đã dùng: <span class="fw-bold">{{ number_format((int) ($order->points_redeemed ?? 0)) }}</span>
+                        </div>
+                        <div class="col-md-6" style="color: #1e40af;">
+                            Điểm đã cộng: <span class="fw-bold">{{ number_format((int) ($order->points_earned ?? 0)) }}</span>
+                        </div>
                     </div>
 
                     @if ($order->items->isNotEmpty())
-                        <div class="mt-5 space-y-3">
+                        <div class="mt-4">
                             @foreach ($order->items as $item)
-                                <div class="flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm shadow-sm">
+                                <div class="d-flex justify-content-between align-items-start gap-3 rounded-2 border border-1 bg-light p-3" style="border-color: #e5e7eb; font-size: 0.875rem;">
                                     <div>
-                                        <p class="font-semibold text-gray-900">{{ $item->product_name }}</p>
-                                        <p class="mt-1 text-gray-500">{{ $item->variant_name ?: 'Phiên bản tiêu chuẩn' }} - SL {{ $item->qty }}</p>
+                                        <p class="fw-bold" style="color: #111827;">{{ $item->product_name }}</p>
+                                        <p class="mt-1" style="color: #6b7280;">{{ $item->variant_name ?: 'Phiên bản tiêu chuẩn' }} - SL {{ $item->qty }}</p>
                                     </div>
-                                    <p class="font-semibold text-gray-800">{{ number_format($item->line_total) }} VND</p>
+                                    <p class="fw-bold text-nowrap" style="color: #374151;">{{ number_format($item->line_total) }} VND</p>
                                 </div>
                             @endforeach
                         </div>
                     @endif
+                </div>
                 </article>
             @empty
-                <div class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center shadow-sm">
-                    <h2 class="text-2xl font-bold text-gray-900">Bạn chưa có đơn mua nào</h2>
-                    <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-gray-500">Khi bạn đặt hàng thành công, lịch sử mua sẽ hiển thị tại đây để theo dõi xử lý và thông tin thanh toán.</p>
-                    <a href="{{ route('products.index') }}" class="mt-8 inline-flex items-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-blue-700">Bắt đầu mua sắm</a>
+                <div class="card rounded-2 border-dashed" style="border: 2px dashed #d1d5db;">
+                <div class="card-body text-center p-5">
+                    <h2 class="fw-bold" style="font-size: 1.5rem; color: #111827;">Bạn chưa có đơn mua nào</h2>
+                    <p class="mt-3" style="max-width: 32rem; font-size: 0.875rem; line-height: 1.75; color: #6b7280; margin: 0 auto;">Khi bạn đặt hàng thành công, lịch sử mua sẽ hiển thị tại đây để theo dõi xử lý và thông tin thanh toán.</p>
+                    <a href="{{ route('products.index') }}" class="btn btn-primary btn-sm fw-bold mt-4">Bắt đầu mua sắm</a>
+                </div>
                 </div>
             @endforelse
         </div>
     </section>
+    </div>
 @endsection

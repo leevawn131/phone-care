@@ -73,19 +73,11 @@
     $maxRedeemPoints = min($availableLoyaltyPoints, $maxRedeemPointsPerOrder);
     $maxPointDiscount = $maxRedeemPoints * $pointValue;
 @endphp
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Thanh toán phụ kiện điện thoại</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
-</head>
-<body
-    class="min-h-screen bg-gray-50 text-gray-800"
+@extends('layouts.shop')
+
+@section('content')
+<div class="container mt-5 mb-5">
+<div
     x-data="checkoutPage({
         subtotal: {{ $checkoutSubtotal }},
         shippingMethod: @js($selectedShippingMethod),
@@ -108,152 +100,155 @@
         hasOldAddressInput: @js($hasOldAddressInput),
         note: @js($noteValue),
     })"
+    x-cloak
 >
-    @include('layouts.header')
+    @if (session('error'))
+        <div class="alert alert-danger mb-4" role="alert">{{ session('error') }}</div>
+    @endif
 
-    <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        @if (session('error'))
-            <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ session('error') }}</div>
-        @endif
+    @if ($errors->any())
+        <div class="alert alert-danger mb-4" role="alert">
+            {{ $errors->first() }}
+        </div>
+    @endif
 
-        @if ($errors->any())
-            <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {{ $errors->first() }}
+    <div class="bg-dark text-white p-4 rounded-2 mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <p class="text-uppercase" style="font-size: 0.875rem; opacity: 0.9; margin: 0;">Thanh toán phụ kiện điện thoại</p>
+                <h1 class="fw-bold mt-2" style="font-size: 2rem; margin: 0;">Xác nhận đơn hàng phụ kiện điện thoại</h1>
+                <p class="mt-2" style="font-size: 0.875rem; opacity: 0.95; max-width: 42rem;">Thông tin nhận hàng rõ ràng, bảo hành minh bạch theo từng sản phẩm và phương thức thanh toán linh hoạt cho khách mua lẻ.</p>
             </div>
-        @endif
-
-        <div class="mb-6 rounded-lg bg-gradient-to-r from-blue-600 via-blue-600 to-sky-500 px-6 py-6 text-white shadow-sm">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <p class="text-sm font-medium text-blue-100">Trang thanh toán phụ kiện điện thoại</p>
-                    <h1 class="mt-1 text-3xl font-bold">Xác nhận đơn hàng phụ kiện điện thoại</h1>
-                    <p class="mt-2 max-w-2xl text-sm text-blue-50">Thông tin nhận hàng rõ ràng, bảo hành minh bạch theo từng sản phẩm và phương thức thanh toán linh hoạt cho khách mua lẻ.</p>
-                </div>
-                <div class="grid grid-cols-3 gap-3 text-center text-sm">
-                    <div class="rounded-lg bg-white/10 px-4 py-3">
-                        <p class="text-blue-100">Giao nhanh</p>
-                        <p class="mt-1 text-lg font-bold">2h</p>
+            <div class="col-lg-5">
+                <div class="row row-cols-3 g-2 text-center" style="font-size: 0.875rem;">
+                    <div class="col rounded-2" style="background-color: rgba(255,255,255,0.1); padding: 0.75rem;">
+                        <p style="opacity: 0.9; margin: 0;">Giao nhanh</p>
+                        <p class="fw-bold mt-1" style="margin: 0;">2h</p>
                     </div>
-                    <div class="rounded-lg bg-white/10 px-4 py-3">
-                        <p class="text-blue-100">Bảo hành</p>
-                        <p class="mt-1 text-lg font-bold">Theo serial</p>
+                    <div class="col rounded-2" style="background-color: rgba(255,255,255,0.1); padding: 0.75rem;">
+                        <p style="opacity: 0.9; margin: 0;">Bảo hành</p>
+                        <p class="fw-bold mt-1" style="margin: 0;">Theo serial</p>
                     </div>
-                    <div class="rounded-lg bg-white/10 px-4 py-3">
-                        <p class="text-blue-100">Thanh toán</p>
-                        <p class="mt-1 text-lg font-bold">Linh hoạt</p>
+                    <div class="col rounded-2" style="background-color: rgba(255,255,255,0.1); padding: 0.75rem;">
+                        <p style="opacity: 0.9; margin: 0;">Thanh toán</p>
+                        <p class="fw-bold mt-1" style="margin: 0;">Linh hoạt</p>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="grid gap-6 xl:grid-cols-[1fr,360px]">
-            <div class="space-y-6">
-                <form id="place-order-form" method="POST" action="{{ route('checkout.store') }}" class="space-y-6">
-                    @csrf
-                    <input type="hidden" name="shipping_method" :value="shippingMethod">
-                    <input type="hidden" name="payment_method" :value="paymentMethod">
-                    <input type="hidden" name="voucher_code" :value="voucherCode">
-                    <input type="hidden" name="use_points" :value="usePoints ? 1 : 0">
+    <div class="row g-4">
+        <div class="col-lg-8 space-y-4">
+            <form id="place-order-form" method="POST" action="{{ route('checkout.store') }}" class="space-y-4">
+                @csrf
+                <input type="hidden" name="shipping_method" :value="shippingMethod">
+                <input type="hidden" name="payment_method" :value="paymentMethod">
+                <input type="hidden" name="voucher_code" :value="voucherCode">
+                <input type="hidden" name="use_points" :value="usePoints ? 1 : 0">
 
-                    <section class="rounded-lg border border-gray-200 bg-white shadow-sm">
-                        <div class="flex flex-col gap-4 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="flex h-11 w-11 items-center justify-center rounded-full bg-red-50 text-red-500">
-                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z" />
-                                        <circle cx="12" cy="10" r="2.5" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-base font-semibold text-gray-900">Địa chỉ nhận hàng</p>
-                                    <p class="text-sm text-gray-500">Điền chính xác để đơn giao thuận lợi hơn</p>
-                                </div>
+                <div class="card border-0 rounded-2">
+                    <div class="card-header bg-transparent border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 44px; height: 44px; background-color: #fef2f2; color: #dc2626;">
+                                <svg class="bi" style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z" />
+                                    <circle cx="12" cy="10" r="2.5" />
+                                </svg>
                             </div>
-                            <button type="button" @click="handleAddressAction()" class="inline-flex items-center justify-center rounded-lg border border-blue-600 px-4 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white">
-                                <span x-text="addressActionLabel()"></span>
-                            </button>
+                            <div>
+                                <p class="fw-bold m-0">Địa chỉ nhận hàng</p>
+                                <p class="text-muted m-0" style="font-size: 0.875rem;">Điền chính xác để đơn giao thuận lợi hơn</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="handleAddressAction()" class="btn btn-sm btn-outline-primary">
+                            <span x-text="addressActionLabel()"></span>
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        @if ($requiresShippingInfo)
+                            <div class="alert alert-warning" role="alert" style="font-size: 0.875rem;">
+                                Tài khoản mới chưa có số điện thoại hoặc địa chỉ nhận hàng. Vui lòng nhập đầy đủ để tiếp tục đặt hàng.
+                            </div>
+                        @endif
+
+                        <div class="rounded-2" style="background-color: #f9fafb; padding: 1rem;">
+                            <div class="d-flex flex-wrap gap-3 align-items-center" style="font-size: 0.875rem;">
+                                <p class="fw-bold m-0" x-text="recipientName || 'Chưa nhập tên người nhận'"></p>
+                                <p class="fw-bold m-0" style="color: #6b7280;" x-text="recipientPhone || 'Chưa nhập số điện thoại'"></p>
+                            </div>
+                            <p class="mt-2 m-0" style="font-size: 0.875rem; line-height: 1.5; color: #6b7280;" x-text="addressLine || 'Chưa nhập địa chỉ nhận hàng'"></p>
+                            <p class="mt-2 m-0 text-muted" style="font-size: 0.75rem;" x-text="fullAreaText()"></p>
                         </div>
 
-                        <div class="px-5 py-5">
-                            @if ($requiresShippingInfo)
-                                <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                                    Tài khoản mới chưa có số điện thoại hoặc địa chỉ nhận hàng. Vui lòng nhập đầy đủ để tiếp tục đặt hàng.
-                                </div>
-                            @endif
+                        <div x-show="editingAddress" x-cloak class="mt-4">
+                            <template x-if="hasSavedAddresses()">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <p class="fw-bold m-0" style="font-size: 0.875rem;">Chọn địa chỉ đã lưu</p>
+                                        <button
+                                            type="button"
+                                            @click="manualAddress = !manualAddress; if (manualAddress) { selectedSavedAddressId = null; }"
+                                            class="btn-link text-primary p-0"
+                                            style="font-size: 0.75rem; text-decoration: none;"
+                                        >
+                                            <span x-text="manualAddress ? 'Ẩn form nhập mới' : 'Nhập địa chỉ mới'"></span>
+                                        </button>
+                                    </div>
 
-                            <div class="rounded-lg bg-gray-50 px-4 py-4">
-                                <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-                                    <p class="text-base font-bold text-gray-900" x-text="recipientName || 'Chưa nhập tên người nhận'"></p>
-                                    <p class="text-sm font-medium text-gray-600" x-text="recipientPhone || 'Chưa nhập số điện thoại'"></p>
-                                </div>
-                                <p class="mt-2 text-sm leading-6 text-gray-600" x-text="addressLine || 'Chưa nhập địa chỉ nhận hàng'"></p>
-                                <p class="mt-2 text-xs text-gray-500" x-text="fullAreaText()"></p>
-                            </div>
-
-                            <div x-show="editingAddress" x-cloak class="mt-5 space-y-4">
-                                <template x-if="hasSavedAddresses()">
-                                    <div class="space-y-3">
-                                        <div class="flex items-center justify-between gap-3">
-                                            <p class="text-sm font-semibold text-gray-800">Chọn địa chỉ đã lưu</p>
+                                    <div class="space-y-2">
+                                        <template x-for="address in savedAddresses" :key="address.id">
                                             <button
                                                 type="button"
-                                                @click="manualAddress = !manualAddress; if (manualAddress) { selectedSavedAddressId = null; }"
-                                                class="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                                                @click="selectSavedAddress(address.id)"
+                                                class="btn w-100 text-start rounded-2 p-3"
+                                                :class="selectedSavedAddressId === address.id ? 'btn-light border-primary border-2' : 'btn-light border-1'"
+                                                style="border-color: #e5e7eb; font-size: 0.875rem;"
                                             >
-                                                <span x-text="manualAddress ? 'Ẩn form nhập mới' : 'Nhập địa chỉ mới'"></span>
-                                            </button>
-                                        </div>
-
-                                        <div class="grid gap-3">
-                                            <template x-for="address in savedAddresses" :key="address.id">
-                                                <button
-                                                    type="button"
-                                                    @click="selectSavedAddress(address.id)"
-                                                    class="w-full rounded-lg border px-4 py-3 text-left transition"
-                                                    :class="selectedSavedAddressId === address.id ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white hover:border-blue-300'"
-                                                >
-                                                    <div class="flex items-start justify-between gap-3">
-                                                        <div>
-                                                            <p class="text-sm font-semibold text-gray-900" x-text="address.full_name"></p>
-                                                            <p class="mt-1 text-xs text-gray-600" x-text="address.phone || ''"></p>
-                                                            <p class="mt-2 text-xs leading-5 text-gray-600" x-text="formatAddress(address)"></p>
-                                                        </div>
-                                                        <span class="rounded-full bg-gray-100 px-2 py-1 text-[11px] font-semibold text-gray-600" x-text="address.label"></span>
+                                                <div class="d-flex justify-content-between align-items-start gap-2">
+                                                    <div>
+                                                        <p class="fw-bold m-0" x-text="address.full_name"></p>
+                                                        <p class="text-muted m-0" x-text="address.phone || ''"></p>
+                                                        <p class="text-muted m-0 mt-1" x-text="formatAddress(address)"></p>
                                                     </div>
-                                                </button>
-                                            </template>
-                                        </div>
+                                                    <span class="badge bg-secondary" x-text="address.label"></span>
+                                                </div>
+                                            </button>
+                                        </template>
                                     </div>
-                                </template>
+                                </div>
+                            </template>
 
-                                <div x-show="manualAddress || !hasSavedAddresses()" x-cloak class="grid gap-4 md:grid-cols-2">
-                                    <div>
-                                        <label for="recipient_name" class="mb-2 block text-sm font-semibold text-gray-700">Họ và tên</label>
-                                        <input id="recipient_name" type="text" x-model="recipientName" class="h-11 w-full rounded-lg border border-gray-200 bg-white px-4 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-0">
+                            <div x-show="manualAddress || !hasSavedAddresses()" x-cloak>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="recipient_name" class="form-label" style="font-size: 0.875rem; font-weight: 600;">Họ và tên</label>
+                                        <input id="recipient_name" type="text" x-model="recipientName" class="form-control form-control-sm">
                                     </div>
-                                    <div>
-                                        <label for="recipient_phone" class="mb-2 block text-sm font-semibold text-gray-700">Số điện thoại</label>
-                                        <input id="recipient_phone" type="text" x-model="recipientPhone" class="h-11 w-full rounded-lg border border-gray-200 bg-white px-4 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-0">
+                                    <div class="col-md-6">
+                                        <label for="recipient_phone" class="form-label" style="font-size: 0.875rem; font-weight: 600;">Số điện thoại</label>
+                                        <input id="recipient_phone" type="text" x-model="recipientPhone" class="form-control form-control-sm">
                                     </div>
-                                    <div>
-                                        <label for="province_code" class="mb-2 block text-sm font-semibold text-gray-700">Tỉnh / Thành</label>
-                                        <input id="province_code" type="text" x-model="provinceCode" class="h-11 w-full rounded-lg border border-gray-200 bg-white px-4 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-0">
+                                    <div class="col-md-6">
+                                        <label for="province_code" class="form-label" style="font-size: 0.875rem; font-weight: 600;">Tỉnh / Thành</label>
+                                        <input id="province_code" type="text" x-model="provinceCode" class="form-control form-control-sm">
                                     </div>
-                                    <div>
-                                        <label for="district_code" class="mb-2 block text-sm font-semibold text-gray-700">Quận / Huyện</label>
-                                        <input id="district_code" type="text" x-model="districtCode" class="h-11 w-full rounded-lg border border-gray-200 bg-white px-4 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-0">
+                                    <div class="col-md-6">
+                                        <label for="district_code" class="form-label" style="font-size: 0.875rem; font-weight: 600;">Quận / Huyện</label>
+                                        <input id="district_code" type="text" x-model="districtCode" class="form-control form-control-sm">
                                     </div>
-                                    <div>
-                                        <label for="ward_code" class="mb-2 block text-sm font-semibold text-gray-700">Phường / Xã</label>
-                                        <input id="ward_code" type="text" x-model="wardCode" class="h-11 w-full rounded-lg border border-gray-200 bg-white px-4 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-0">
+                                    <div class="col-md-6">
+                                        <label for="ward_code" class="form-label" style="font-size: 0.875rem; font-weight: 600;">Phường / Xã</label>
+                                        <input id="ward_code" type="text" x-model="wardCode" class="form-control form-control-sm">
                                     </div>
-                                    <div class="md:col-span-2">
-                                        <label for="address_line" class="mb-2 block text-sm font-semibold text-gray-700">Địa chỉ chi tiết</label>
-                                        <textarea id="address_line" rows="3" x-model="addressLine" class="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm shadow-sm focus:border-blue-600 focus:outline-none focus:ring-0"></textarea>
+                                    <div class="col-12">
+                                        <label for="address_line" class="form-label" style="font-size: 0.875rem; font-weight: 600;">Địa chỉ chi tiết</label>
+                                        <textarea id="address_line" rows="3" x-model="addressLine" class="form-control form-control-sm"></textarea>
                                     </div>
                                 </div>
 
-                                <div x-show="!hasSavedAddresses()" x-cloak class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+                                <div x-show="!hasSavedAddresses()" x-cloak class="alert alert-warning mt-3" role="alert" style="font-size: 0.75rem;">
                                     Bạn chưa có địa chỉ đã lưu. Vui lòng nhập địa chỉ mới để đặt hàng.
                                 </div>
                             </div>
@@ -266,287 +261,247 @@
                             <input type="hidden" name="district_code" :value="districtCode">
                             <input type="hidden" name="ward_code" :value="wardCode">
                         </div>
-                    </section>
+                    </div>
+                </div>
 
-                    <section class="rounded-lg border border-gray-200 bg-white shadow-sm">
-                        <div class="border-b border-gray-100 px-5 py-4">
-                            <p class="text-base font-semibold text-gray-900">Vận chuyển và ghi chú</p>
-                        </div>
+                <div class="card border-0 rounded-2">
+                    <div class="card-header bg-transparent border-bottom py-3">
+                        <p class="fw-bold m-0">Vận chuyển và ghi chú</p>
+                    </div>
 
-                        <div class="grid gap-5 px-5 py-5 lg:grid-cols-[1.1fr,0.9fr]">
-                            <div>
-                                <label for="note" class="mb-2 block text-sm font-semibold text-gray-700">Lời nhắn cho người bán</label>
-                                <textarea id="note" name="note" rows="4" x-model="note" class="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm focus:border-blue-600 focus:outline-none focus:ring-0" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi giao hàng..."></textarea>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-lg-7">
+                                <label for="note" class="form-label fw-bold" style="font-size: 0.875rem;">Lời nhắn cho người bán</label>
+                                <textarea id="note" name="note" rows="4" x-model="note" class="form-control" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi giao hàng..."></textarea>
                             </div>
 
-                            <div>
-                                <p class="mb-3 text-sm font-semibold text-gray-700">Chọn phương thức vận chuyển</p>
-                                <div class="space-y-3">
-                                    <button type="button" @click="shippingMethod = 'express'" :class="shippingMethod === 'express' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'" class="flex w-full items-start justify-between rounded-lg border px-4 py-4 text-left transition hover:border-blue-600">
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-900">Giao nhanh</p>
-                                            <p class="mt-1 text-xs text-gray-500">Ưu tiên nội thành, nhận hàng trong ngày.</p>
+                            <div class="col-lg-5">
+                                <p class="fw-bold mb-3" style="font-size: 0.875rem;">Chọn phương thức vận chuyển</p>
+                                <div class="space-y-2">
+                                    <button type="button" @click="shippingMethod = 'express'" :class="shippingMethod === 'express' ? 'border-primary' : ''" class="btn btn-sm w-100 text-start p-3 border rounded-2" style="border-color: #e5e7eb;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="fw-bold m-0" style="font-size: 0.875rem;">Giao nhanh</p>
+                                                <p class="text-muted m-0 mt-1" style="font-size: 0.75rem;">Ưu tiên nội thành, nhận hàng trong ngày.</p>
+                                            </div>
+                                            <span class="fw-bold text-primary" x-text="formatCurrency(shippingFees.express)"></span>
                                         </div>
-                                        <span class="text-sm font-bold text-blue-600" x-text="formatCurrency(shippingFees.express)"></span>
                                     </button>
-                                    <button type="button" @click="shippingMethod = 'saver'" :class="shippingMethod === 'saver' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'" class="flex w-full items-start justify-between rounded-lg border px-4 py-4 text-left transition hover:border-blue-600">
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-900">Giao tiết kiệm</p>
-                                            <p class="mt-1 text-xs text-gray-500">Phù hợp đơn thông thường, chi phí tối ưu.</p>
+                                    <button type="button" @click="shippingMethod = 'saver'" :class="shippingMethod === 'saver' ? 'border-primary' : ''" class="btn btn-sm w-100 text-start p-3 border rounded-2" style="border-color: #e5e7eb;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="fw-bold m-0" style="font-size: 0.875rem;">Giao tiết kiệm</p>
+                                                <p class="text-muted m-0 mt-1" style="font-size: 0.75rem;">Phù hợp đơn thông thường, chi phí tối ưu.</p>
+                                            </div>
+                                            <span class="fw-bold text-primary" x-text="formatCurrency(shippingFees.saver)"></span>
                                         </div>
-                                        <span class="text-sm font-bold text-blue-600" x-text="formatCurrency(shippingFees.saver)"></span>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </section>
+                    </div>
+                </div>
 
-                    <section class="rounded-lg border border-gray-200 bg-white shadow-sm">
-                        <div class="border-b border-gray-100 px-5 py-4">
-                            <p class="text-base font-semibold text-gray-900">Mã giảm giá và tích điểm</p>
-                            <p class="mt-1 text-xs text-gray-500">
-                                Điểm khả dụng: <span class="font-semibold text-blue-600">{{ number_format($availableLoyaltyPoints) }} điểm</span>
-                            </p>
-                        </div>
+                <div class="card border-0 rounded-2">
+                    <div class="card-header bg-transparent border-bottom py-3">
+                        <p class="fw-bold m-0">Mã giảm giá và tích điểm</p>
+                        <p class="text-muted m-0 mt-1" style="font-size: 0.75rem;">Điểm khả dụng: <span class="fw-bold text-primary">{{ number_format($availableLoyaltyPoints) }} điểm</span></p>
+                    </div>
 
-                        <div class="grid gap-5 px-5 py-5 lg:grid-cols-[1fr,280px] lg:items-center">
-                            <div>
-                                <label for="voucher_code" class="mb-2 block text-sm font-semibold text-gray-700">Voucher / Mã giảm giá</label>
-                                <div class="flex flex-col gap-3 sm:flex-row">
-                                    <input id="voucher_code" type="text" x-model="voucherCode" class="h-11 flex-1 rounded-lg border border-gray-200 px-4 text-sm focus:border-blue-600 focus:outline-none focus:ring-0" placeholder="Nhập mã như PHUKIEN20">
-                                    <button type="button" @click="voucherApplied = voucherCode.trim().length > 0" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-lg-7">
+                                <label for="voucher_code" class="form-label fw-bold" style="font-size: 0.875rem;">Voucher / Mã giảm giá</label>
+                                <div class="d-flex gap-2">
+                                    <input id="voucher_code" type="text" x-model="voucherCode" class="form-control form-control-sm" placeholder="Nhập mã như PHUKIEN20">
+                                    <button type="button" @click="voucherApplied = voucherCode.trim().length > 0" class="btn btn-primary btn-sm fw-bold">
                                         Áp dụng
                                     </button>
                                 </div>
-                                <p class="mt-2 text-xs text-gray-500">Nhập mã để hệ thống áp dụng ưu đãi tạm tính ngay trên trang.</p>
+                                <p class="text-muted mt-2 m-0" style="font-size: 0.75rem;">Nhập mã để hệ thống áp dụng ưu đãi tạm tính ngay trên trang.</p>
                             </div>
 
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-4">
-                                <div class="flex items-center justify-between gap-4">
-                                    <div>
-                                        <p class="text-sm font-semibold text-gray-900">Dùng điểm tích lũy</p>
-                                        <p class="mt-1 text-xs text-gray-500">
-                                            Tối đa <span class="font-semibold text-gray-700">{{ number_format($maxRedeemPoints) }} điểm</span>
-                                            (giảm {{ number_format($maxPointDiscount) }} VND) cho đơn hàng hiện tại.
-                                        </p>
-                                    </div>
-                                    <button type="button" @click="toggleUsePoints()" :class="usePoints ? 'bg-blue-600' : 'bg-gray-300'" class="relative inline-flex h-7 w-12 items-center rounded-full transition" :disabled="availableLoyaltyPoints <= 0">
-                                        <span :class="usePoints ? 'translate-x-6' : 'translate-x-1'" class="inline-block h-5 w-5 rounded-full bg-white transition"></span>
-                                    </button>
-                                </div>
-                                <p x-show="availableLoyaltyPoints <= 0" x-cloak class="mt-2 text-xs text-amber-700">Bạn chưa có điểm tích lũy để sử dụng.</p>
-                                <p class="mt-2 text-xs text-emerald-700">
-                                    Hoàn tất đơn này, bạn sẽ nhận khoảng <span class="font-semibold" x-text="new Intl.NumberFormat('vi-VN').format(estimatedEarnedPoints())"></span> điểm.
-                                </p>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="rounded-lg border border-gray-200 bg-white shadow-sm">
-                        <div class="border-b border-gray-100 px-5 py-4">
-                            <p class="text-base font-semibold text-gray-900">Phương thức thanh toán</p>
-                        </div>
-
-                        <div class="grid gap-3 px-5 py-5 md:grid-cols-2 xl:grid-cols-4">
-                            <button type="button" @click="paymentMethod = 'cod'" :class="paymentMethod === 'cod' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'" class="rounded-lg border px-4 py-4 text-left transition hover:border-blue-600">
-                                <p class="text-sm font-semibold">Thanh toán khi nhận hàng</p>
-                                <p class="mt-1 text-xs text-gray-500">COD phù hợp cho đơn mua lẻ.</p>
-                            </button>
-                            <button type="button" @click="paymentMethod = 'card'" :class="paymentMethod === 'card' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'" class="rounded-lg border px-4 py-4 text-left transition hover:border-blue-600">
-                                <p class="text-sm font-semibold">Thẻ tín dụng</p>
-                                <p class="mt-1 text-xs text-gray-500">Visa, MasterCard, JCB.</p>
-                            </button>
-                            <button type="button" @click="paymentMethod = 'ewallet'" :class="paymentMethod === 'ewallet' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'" class="rounded-lg border px-4 py-4 text-left transition hover:border-blue-600">
-                                <p class="text-sm font-semibold">Ví điện tử</p>
-                                <p class="mt-1 text-xs text-gray-500">Momo, VNPay, ZaloPay.</p>
-                            </button>
-                            <button type="button" @click="paymentMethod = 'bank_transfer'" :class="paymentMethod === 'bank_transfer' ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700'" class="rounded-lg border px-4 py-4 text-left transition hover:border-blue-600">
-                                <p class="text-sm font-semibold">Chuyển khoản ngân hàng</p>
-                                <p class="mt-1 text-xs text-gray-500">Xác nhận tự động sau thanh toán.</p>
-                            </button>
-                        </div>
-                    </section>
-                </form>
-
-                <section class="rounded-lg border border-gray-200 bg-white shadow-sm">
-                    <div class="border-b border-gray-100 px-5 py-4">
-                        <div class="grid gap-3 text-sm font-semibold text-gray-500 md:grid-cols-[1.6fr,0.8fr,0.7fr,0.9fr]">
-                            <span>Sản phẩm</span>
-                            <span class="md:text-center">Đơn giá</span>
-                            <span class="md:text-center">Số lượng</span>
-                            <span class="md:text-right">Thành tiền</span>
-                        </div>
-                    </div>
-
-                    <div class="divide-y divide-gray-100">
-                        @foreach ($checkoutItems as $item)
-                            <article class="grid gap-4 px-5 py-5 md:grid-cols-[1.6fr,0.8fr,0.7fr,0.9fr] md:items-center">
-                                <div class="flex gap-4">
-                                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="h-24 w-24 rounded-lg border border-gray-100 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/160x160/e5e7eb/1f2937?text=Hinh+san+pham';">
-                                    <div class="min-w-0">
-                                        <p class="text-sm font-semibold leading-6 text-gray-900">{{ $item['name'] }}</p>
-                                        <p class="mt-1 text-xs text-gray-500">Phân loại: {{ $item['variant_name'] }}</p>
-                                        <div class="mt-2 flex flex-wrap items-center gap-2">
-                                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4Z" />
-                                                </svg>
-                                                Bảo hành {{ $item['warranty_months'] }} tháng
-                                            </span>
-                                            <span class="text-xs text-gray-400">SKU: {{ $item['sku'] }}</span>
+                            <div class="col-lg-5">
+                                <div class="rounded-2 p-3" style="background-color: #f9fafb; border: 1px solid #e5e7eb;">
+                                    <div class="d-flex justify-content-between align-items-start gap-2">
+                                        <div>
+                                            <p class="fw-bold m-0" style="font-size: 0.875rem;">Dùng điểm tích lũy</p>
+                                            <p class="text-muted m-0 mt-1" style="font-size: 0.75rem;">
+                                                Tối đa <span class="fw-bold text-muted">{{ number_format($maxRedeemPoints) }} điểm</span>
+                                                (giảm {{ number_format($maxPointDiscount) }} VND) cho đơn hàng hiện tại.
+                                            </p>
                                         </div>
+                                        <button type="button" @click="toggleUsePoints()" :class="usePoints ? 'bg-primary' : 'bg-secondary'" class="btn btn-sm rounded-circle p-0" style="width: 28px; height: 28px; :disabled="availableLoyaltyPoints <= 0">
+                                            <span :class="usePoints ? 'translate-x-3' : ''" class="d-inline-block" style="width: 20px; height: 20px; background-color: white; border-radius: 50%; transition: all 0.2s;"></span>
+                                        </button>
                                     </div>
+                                    <p x-show="availableLoyaltyPoints <= 0" x-cloak class="text-warning m-0 mt-2" style="font-size: 0.75rem;">Bạn chưa có điểm tích lũy để sử dụng.</p>
+                                    <p class="text-success m-0 mt-2" style="font-size: 0.75rem;">
+                                        Hoàn tất đơn này, bạn sẽ nhận khoảng <span class="fw-bold" x-text="new Intl.NumberFormat('vi-VN').format(estimatedEarnedPoints())"></span> điểm.
+                                    </p>
                                 </div>
-
-                                <div class="text-sm font-semibold text-gray-900 md:text-center">
-                                    {{ number_format($item['price']) }} VND
-                                </div>
-
-                                <div class="flex items-center gap-2 md:justify-center">
-                                    @if ($item['quantity'] > 1)
-                                        <form method="POST" action="{{ route('cart.update', $item['id']) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="quantity" value="{{ $item['quantity'] - 1 }}">
-                                            <button type="submit" class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition hover:border-blue-600 hover:text-blue-600">-</button>
-                                        </form>
-                                    @else
-                                        <button type="button" disabled class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-100 text-gray-300">-</button>
-                                    @endif
-
-                                    <div class="flex h-9 min-w-[44px] items-center justify-center rounded-lg border border-gray-200 px-3 text-sm font-semibold text-gray-900">
-                                        {{ $item['quantity'] }}
-                                    </div>
-
-                                    <form method="POST" action="{{ route('cart.update', $item['id']) }}">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="quantity" value="{{ $item['quantity'] + 1 }}">
-                                        <button type="submit" class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition hover:border-blue-600 hover:text-blue-600">+</button>
-                                    </form>
-                                </div>
-
-                                <div class="flex items-center justify-between gap-3 md:justify-end">
-                                    <div class="text-right">
-                                        <p class="text-base font-bold text-blue-600">{{ number_format($item['price'] * $item['quantity']) }} VND</p>
-                                        <p class="text-xs text-gray-400">Đã gồm VAT</p>
-                                    </div>
-                                    <form method="POST" action="{{ route('cart.remove', $item['id']) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-50">Xóa</button>
-                                    </form>
-                                </div>
-                            </article>
-                        @endforeach
-                    </div>
-                </section>
-            </div>
-
-            <aside class="space-y-6 xl:sticky xl:top-6 xl:self-start">
-                <section class="rounded-lg border border-gray-200 bg-white shadow-sm">
-                    <div class="border-b border-gray-100 px-5 py-4">
-                        <p class="text-base font-semibold text-gray-900">Tổng thanh toán</p>
-                    </div>
-
-                    <div class="space-y-4 px-5 py-5 text-sm text-gray-600">
-                        <div class="flex items-center justify-between">
-                            <span>Tổng tiền hàng</span>
-                            <span class="font-semibold text-gray-900" x-text="formatCurrency(subtotal)"></span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span>Phí vận chuyển</span>
-                            <span class="font-semibold text-gray-900" x-text="formatCurrency(shippingFee())"></span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span>Giảm giá tạm tính</span>
-                            <span class="font-semibold text-emerald-600" x-text="'-' + formatCurrency(discountTotal())"></span>
-                        </div>
-                        <div class="rounded-lg bg-gray-50 px-4 py-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm font-medium text-gray-600">Tổng thanh toán</span>
-                                <span class="text-2xl font-bold text-blue-600" x-text="formatCurrency(grandTotal())"></span>
                             </div>
-                            <p class="mt-2 text-xs leading-5 text-gray-500">Đơn hàng sẽ được tạo ở trạng thái <span class="font-semibold text-gray-700">pending</span> để admin xác nhận trước khi kích hoạt bảo hành.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 rounded-2">
+                    <div class="card-header bg-transparent border-bottom py-3">
+                        <p class="fw-bold m-0">Phương thức thanh toán</p>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row row-cols-2 row-cols-md-4 g-2">
+                            <div class="col">
+                                <button type="button" @click="paymentMethod = 'cod'" :class="paymentMethod === 'cod' ? 'border-primary border-2' : ''" class="btn btn-light w-100 p-2 rounded-2 text-start" style="border: 1px solid #e5e7eb; font-size: 0.75rem;">
+                                    <p class="fw-bold m-0">Thanh toán khi nhận hàng</p>
+                                    <p class="text-muted m-0 mt-1">COD phù hợp cho đơn mua lẻ.</p>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button type="button" @click="paymentMethod = 'card'" :class="paymentMethod === 'card' ? 'border-primary border-2' : ''" class="btn btn-light w-100 p-2 rounded-2 text-start" style="border: 1px solid #e5e7eb; font-size: 0.75rem;">
+                                    <p class="fw-bold m-0">Thẻ tín dụng</p>
+                                    <p class="text-muted m-0 mt-1">Visa, MasterCard, JCB.</p>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button type="button" @click="paymentMethod = 'ewallet'" :class="paymentMethod === 'ewallet' ? 'border-primary border-2' : ''" class="btn btn-light w-100 p-2 rounded-2 text-start" style="border: 1px solid #e5e7eb; font-size: 0.75rem;">
+                                    <p class="fw-bold m-0">Ví điện tử</p>
+                                    <p class="text-muted m-0 mt-1">Momo, VNPay, ZaloPay.</p>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button type="button" @click="paymentMethod = 'bank_transfer'" :class="paymentMethod === 'bank_transfer' ? 'border-primary border-2' : ''" class="btn btn-light w-100 p-2 rounded-2 text-start" style="border: 1px solid #e5e7eb; font-size: 0.75rem;">
+                                    <p class="fw-bold m-0">Chuyển khoản ngân hàng</p>
+                                    <p class="text-muted m-0 mt-1">Xác nhận tự động sau thanh toán.</p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="card border-0 rounded-2">
+                <div class="card-header bg-transparent border-bottom py-3">
+                    <p class="fw-bold m-0">Sản phẩm được đặt</p>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm m-0" style="font-size: 0.875rem;">
+                            <thead class="table-light">
+                                <tr style="border-bottom: 1px solid #e5e7eb;">
+                                    <th style="font-weight: 600; color: #6b7280;">Sản phẩm</th>
+                                    <th class="text-center" style="font-weight: 600; color: #6b7280;">Đơn giá</th>
+                                    <th class="text-center" style="font-weight: 600; color: #6b7280;">Số lượng</th>
+                                    <th class="text-end" style="font-weight: 600; color: #6b7280;">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border-top-0">
+                                @foreach ($checkoutItems as $item)
+                                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;" onerror="this.onerror=null;this.src='https://placehold.co/160x160/e5e7eb/1f2937?text=Hinh+san+pham';">
+                                                <div style="min-width: 0;">
+                                                    <p class="fw-bold m-0">{{ $item['name'] }}</p>
+                                                    <p class="text-muted m-0 mt-1" style="font-size: 0.75rem;">{{ $item['variant_name'] }}</p>
+                                                    <div class="mt-1">
+                                                        <span class="badge bg-info text-dark" style="font-size: 0.65rem;">Bảo hành {{ $item['warranty_months'] }} tháng</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center fw-bold">{{ number_format($item['price']) }} VND</td>
+                                        <td class="text-center">{{ $item['quantity'] }}</td>
+                                        <td class="text-end fw-bold text-primary">{{ number_format($item['price'] * $item['quantity']) }} VND</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 rounded-2 sticky-top" style="top: 24px;">
+                <div class="card-header bg-transparent border-bottom py-3">
+                    <p class="fw-bold m-0">Tổng thanh toán</p>
+                </div>
+
+                <div class="card-body">
+                    <div class="space-y-3" style="font-size: 0.875rem;">
+                        <div class="d-flex justify-content-between">
+                            <span>Tổng tiền hàng</span>
+                            <span class="fw-bold" x-text="formatCurrency(subtotal)"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Phí vận chuyển</span>
+                            <span class="fw-bold" x-text="formatCurrency(shippingFee())"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Giảm giá tạm tính</span>
+                            <span class="fw-bold text-success" x-text="'-' + formatCurrency(discountTotal())"></span>
+                        </div>
+                        <div class="rounded-2 p-3" style="background-color: #f9fafb; margin-top: 1rem;">
+                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                <span class="fw-bold" style="font-size: 0.875rem; color: #6b7280;">Tổng thanh toán</span>
+                                <span class="fw-bold" style="font-size: 1.5rem; color: #2563eb;" x-text="formatCurrency(grandTotal())"></span>
+                            </div>
+                            <p class="text-muted m-0 mt-2" style="font-size: 0.75rem; line-height: 1.5;">Đơn hàng sẽ được tạo ở trạng thái <span class="fw-bold text-muted">pending</span> để admin xác nhận trước khi kích hoạt bảo hành.</p>
                         </div>
                     </div>
 
-                    <div class="border-t border-gray-100 px-5 py-5">
-                        <button type="submit" form="place-order-form" class="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">
+                    <div class="d-flex flex-column gap-2 mt-4">
+                        <button type="submit" form="place-order-form" class="btn btn-primary btn-sm fw-bold">
                             Đặt hàng
                         </button>
-                        <a href="{{ route('products.index') }}" class="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:border-blue-600 hover:text-blue-600">
+                        <a href="{{ route('products.index') }}" class="btn btn-outline-primary btn-sm fw-bold">
                             Tiếp tục mua sắm
                         </a>
                     </div>
-                </section>
+                </div>
 
-                <section class="rounded-lg border border-blue-100 bg-blue-50 px-5 py-5 shadow-sm">
-                    <p class="text-sm font-semibold text-blue-700">Cam kết cho khách mua phụ kiện</p>
-                    <ul class="mt-3 space-y-3 text-sm text-blue-800">
-                        <li class="flex gap-3">
-                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-blue-600"></span>
-                            <span>Mỗi sản phẩm đều có thời hạn bảo hành hiển thị rõ và kích hoạt sau khi đơn hoàn tất.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-blue-600"></span>
-                            <span>Có thể tra cứu bảo hành bằng số điện thoại hoặc serial number bất kỳ lúc nào.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <span class="mt-1 h-2.5 w-2.5 rounded-full bg-blue-600"></span>
-                            <span>Hotline hỗ trợ kỹ thuật và đổi mới khi lỗi theo đúng chính sách từng sản phẩm.</span>
-                        </li>
+                <div class="card-body border-top" style="background-color: #eff6ff; border-bottom-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem;">
+                    <p class="fw-bold m-0" style="font-size: 0.875rem; color: #2563eb;">Cam kết cho khách mua phụ kiện</p>
+                    <ul class="m-0 mt-2 ps-3" style="font-size: 0.875rem; color: #1e40af; line-height: 1.75;">
+                        <li>Mỗi sản phẩm đều có thời hạn bảo hành hiển thị rõ và kích hoạt sau khi đơn hoàn tất.</li>
+                        <li>Có thể tra cứu bảo hành bằng số điện thoại hoặc serial number bất kỳ lúc nào.</li>
+                        <li>Hotline hỗ trợ kỹ thuật và đổi mới khi lỗi theo đúng chính sách từng sản phẩm.</li>
                     </ul>
-                </section>
-            </aside>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
+</div>
+</div>
+@endsection
+
+@push('scripts')
+    <style>
+        [x-cloak] { display: none !important; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+    </style>
 
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('checkoutPage', (config) => ({
-                subtotal: Number(config.subtotal ?? 0),
-                shippingMethod: config.shippingMethod ?? 'express',
-                paymentMethod: config.paymentMethod ?? 'cod',
-                voucherCode: config.voucherCode ?? '',
-                usePoints: Boolean(config.usePoints),
-                voucherApplied: Boolean((config.voucherCode ?? '').trim().length),
-                recipientName: config.recipientName ?? '',
-                recipientPhone: config.recipientPhone ?? '',
-                addressLine: config.addressLine ?? '',
-                provinceCode: config.provinceCode ?? '',
-                districtCode: config.districtCode ?? '',
-                wardCode: config.wardCode ?? '',
-                savedAddresses: Array.isArray(config.savedAddresses) ? config.savedAddresses : [],
-                selectedSavedAddressId: config.selectedSavedAddressId ?? null,
-                requiresShippingInfo: Boolean(config.requiresShippingInfo),
-                availableLoyaltyPoints: Number(config.availableLoyaltyPoints ?? 0),
-                pointValue: Number(config.pointValue ?? 100),
-                maxRedeemPoints: Number(config.maxRedeemPoints ?? 0),
-                earningStepAmount: Number(config.earningStepAmount ?? 10000),
-                note: config.note ?? '',
+            Alpine.data('checkoutPage', (initialData) => ({
+                ...initialData,
                 editingAddress: false,
-                manualAddress: Boolean(config.hasOldAddressInput),
-                shippingFees: {
-                    express: 32000,
-                    saver: 18000,
-                },
-                init() {
-                    if (this.hasSavedAddresses() && ! this.manualAddress && this.selectedSavedAddressId) {
-                        this.selectSavedAddress(this.selectedSavedAddressId, false);
-                    }
+                manualAddress: initialData.hasOldAddressInput,
+                shippingFees: { express: 30000, saver: 15000 },
+                voucherApplied: false,
 
-                    if (this.requiresShippingInfo) {
-                        this.editingAddress = true;
-                        this.manualAddress = true;
-                        this.selectedSavedAddressId = null;
-                    }
-                },
                 hasSavedAddresses() {
-                    return this.savedAddresses.length > 0;
+                    return Array.isArray(this.savedAddresses) && this.savedAddresses.length > 0;
                 },
                 findAddressById(id) {
-                    return this.savedAddresses.find((address) => String(address.id) === String(id)) ?? null;
+                    return this.savedAddresses.find((addr) => String(addr.id) === String(id));
                 },
                 formatAddress(address) {
                     const parts = [
@@ -648,5 +603,4 @@
             }));
         });
     </script>
-</body>
-</html>
+@endpush
