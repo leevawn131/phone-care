@@ -26,15 +26,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/thank-you/{order:order_number}', [CheckoutController::class, 'thankYou'])->name('checkout.thank-you');
 });
 
-Route::get('/tra-cuu-bao-hanh', [WarrantyLookupController::class, 'index'])->name('warranty-lookup.index');
-Route::post('/tra-cuu-bao-hanh', [WarrantyLookupController::class, 'search'])->name('warranty-lookup.search');
-
 Route::middleware(['auth', 'admin'])->prefix('legacy-admin')->as('legacy-admin.')->group(function () {
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::patch('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/tra-cuu-bao-hanh', [WarrantyLookupController::class, 'index'])->name('warranty-lookup.index');
+    Route::post('/tra-cuu-bao-hanh/{warranty}/yeu-cau', [WarrantyLookupController::class, 'store'])
+        ->name('warranty-lookup.claims.store');
+
     Route::get('/don-mua', function () {
         $orders = request()->user()
             ->orders()

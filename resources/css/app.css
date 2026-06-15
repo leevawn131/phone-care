@@ -1,3 +1,136 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* PhoneCare Custom CSS Stylesheet */
+
+/* Basic layout utilities from Tailwind mapping to plain CSS */
+.fixed.inset-0 {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+.z-50 {
+    z-index: 1050;
+}
+.bg-gray-900\/40 {
+    background-color: rgba(15, 23, 42, 0.45);
+}
+.bg-gray-500 {
+    background-color: rgba(107, 114, 128, 0.5);
+}
+.opacity-75 {
+    opacity: 0.75;
+}
+.flex.items-center.justify-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.max-w-2xl {
+    max-width: 672px;
+}
+.w-full {
+    width: 100%;
+}
+.rounded-2xl {
+    border-radius: 1rem;
+}
+.bg-white {
+    background-color: #ffffff;
+}
+.p-6 {
+    padding: 1.5rem;
+}
+.p-5 {
+    padding: 1.25rem;
+}
+.shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.mb-5 {
+    margin-bottom: 1.25rem;
+}
+.flex.justify-between {
+    justify-content: space-between;
+}
+.gap-3 {
+    gap: 0.75rem;
+}
+.space-y-5 > * + * {
+    margin-top: 1.25rem;
+}
+.space-y-4 > * + * {
+    margin-top: 1rem;
+}
+.space-y-6 > * + * {
+    margin-top: 1.5rem;
+}
+.rounded-xl {
+    border-radius: 0.75rem;
+}
+.bg-gray-50\/70 {
+    background-color: rgba(249, 250, 251, 0.7);
+}
+.bg-gray-50 {
+    background-color: #f9fafb;
+}
+.border-gray-100 {
+    border-color: #f3f4f6;
+}
+.text-gray-900 {
+    color: #0f172a;
+}
+.text-gray-600 {
+    color: #475569;
+}
+.text-gray-500 {
+    color: #64748b;
+}
+.text-xs {
+    font-size: 0.75rem;
+}
+.text-sm {
+    font-size: 0.875rem;
+}
+.text-lg {
+    font-size: 1.125rem;
+}
+.font-semibold {
+    font-weight: 600;
+}
+.font-medium {
+    font-weight: 500;
+}
+.uppercase {
+    text-transform: uppercase;
+}
+.tracking-wide {
+    letter-spacing: 0.025em;
+}
+.hidden {
+    display: none;
+}
+.grid {
+    display: grid;
+}
+.gap-4 {
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .sm\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .sm\:p-7 {
+        padding: 1.75rem;
+    }
+    .sm\:w-full {
+        width: 100%;
+    }
+    .sm\:mx-auto {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .sm\:max-w-2xl {
+        max-width: 672px;
+    }
+}

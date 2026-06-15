@@ -2,75 +2,70 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\WarrantyClaim;
 use App\Models\Warranty;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class WarrantyLookupController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $warranties = Warranty::query()
+            ->with(['productSerial', 'orderItem.product', 'order', 'latestClaim'])
+            ->where('user_id', $request->user()->id)
+            ->latest('activated_at')
+            ->get();
+
         return view('warranty-lookup.index', [
-            'searchQuery' => '',
-            'results' => collect(),
-            'hasSearched' => false,
-            'searchType' => null,
+            'warranties' => $this->prepareResults($warranties),
         ]);
     }
 
-    public function search(Request $request): View|RedirectResponse
+    public function store(Request $request, Warranty $warranty): RedirectResponse
     {
+        abort_unless($warranty->user_id === $request->user()->id, 403);
+
         $validated = $request->validate([
-            'search_query' => ['required', 'string', 'max:100'],
+            'issue_description' => ['required', 'string', 'min:20', 'max:2000'],
+            'attachments' => ['nullable', 'array', 'max:6'],
+            'attachments.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,avi,webm', 'max:20480'],
         ]);
 
-        $searchQuery = trim($validated['search_query']);
-        $searchType = $this->detectSearchType($searchQuery);
-        $results = $searchType === 'phone'
-            ? $this->searchByPhone($searchQuery)
-            : $this->searchBySerial($searchQuery);
+        $latestClaim = $warranty->latestClaim()->first();
+        if ($latestClaim && in_array($latestClaim->status, ['pending', 'approved', 'received', 'in_progress'], true)) {
+            return back()->with('error', 'Yêu cầu bảo hành cho sản phẩm này đang được xử lý.');
+        }
 
-        return view('warranty-lookup.index', [
-            'searchQuery' => $searchQuery,
-            'results' => $this->prepareResults($results),
-            'hasSearched' => true,
-            'searchType' => $searchType,
+        $attachmentPaths = collect($request->file('attachments', []))
+            ->filter()
+            ->map(function ($file): array {
+                $path = $file->store('warranty-claims/'.now()->format('Y/m'), 'public');
+
+                return [
+                    'path' => $path,
+                    'name' => $file->getClientOriginalName(),
+                    'mime' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                ];
+            })
+            ->values()
+            ->all();
+
+        WarrantyClaim::create([
+            'claim_number' => $this->generateClaimNumber($warranty->id),
+            'warranty_id' => $warranty->id,
+            'handled_by' => null,
+            'status' => 'pending',
+            'issue_description' => $validated['issue_description'],
+            'attachments' => $attachmentPaths,
         ]);
-    }
 
-    private function searchByPhone(string $searchQuery): Collection
-    {
-        $phoneCandidates = $this->buildPhoneCandidates($searchQuery);
-        $normalizedPhoneExpression = "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(recipient_phone, ' ', ''), '-', ''), '.', ''), '(', ''), ')', '')";
-
-        return Warranty::query()
-            ->with(['productSerial', 'orderItem.product', 'orderItem.order'])
-            ->whereHas('orderItem.order', function ($query) use ($phoneCandidates, $normalizedPhoneExpression): void {
-                $query->where(function ($phoneQuery) use ($phoneCandidates, $normalizedPhoneExpression): void {
-                    foreach ($phoneCandidates as $phone) {
-                        $phoneQuery->orWhere('recipient_phone', $phone)
-                            ->orWhereRaw("{$normalizedPhoneExpression} = ?", [$phone]);
-                    }
-                });
-            })
-            ->latest('activated_at')
-            ->get();
-    }
-
-    private function searchBySerial(string $searchQuery): Collection
-    {
-        $serialNumber = strtoupper(preg_replace('/\s+/', '', $searchQuery));
-
-        return Warranty::query()
-            ->with(['productSerial', 'orderItem.product', 'orderItem.order'])
-            ->whereHas('productSerial', function ($query) use ($serialNumber): void {
-                $query->where('serial_number', $serialNumber);
-            })
-            ->latest('activated_at')
-            ->get();
+        return back()->with('success', 'Yêu cầu bảo hành đã được gửi và đang chờ xét duyệt.');
     }
 
     private function prepareResults(Collection $warranties): Collection
@@ -80,6 +75,7 @@ class WarrantyLookupController extends Controller
         return $warranties->map(function (Warranty $warranty) use ($now): Warranty {
             $expiresAt = $warranty->expires_at ? Carbon::parse($warranty->expires_at) : null;
             $activatedAt = $warranty->activated_at ? Carbon::parse($warranty->activated_at) : null;
+            $latestClaim = $warranty->latestClaim;
 
             if ($expiresAt && $expiresAt->lt($now) && $warranty->status !== 'expired') {
                 $warranty->forceFill(['status' => 'expired'])->saveQuietly();
@@ -100,32 +96,24 @@ class WarrantyLookupController extends Controller
             $warranty->setAttribute('remaining_days', $remainingDays);
             $warranty->setAttribute('activated_at_display', $activatedAt?->format('d/m/Y'));
             $warranty->setAttribute('expires_at_display', $expiresAt?->format('d/m/Y'));
+            $warranty->setAttribute('claim_status', $latestClaim?->status);
+            $warranty->setAttribute('claim_status_label', $latestClaim ? (WarrantyClaim::statusOptions()[$latestClaim->status] ?? ucfirst($latestClaim->status)) : null);
+            $warranty->setAttribute('claim_status_color', $latestClaim ? WarrantyClaim::statusColor($latestClaim->status) : null);
+            $warranty->setAttribute('can_request_claim', ! $latestClaim || ! in_array($latestClaim->status, ['pending', 'approved', 'received', 'in_progress'], true));
+            $warranty->setAttribute('claim_attachments', $latestClaim?->attachments ?? []);
+            $warranty->setAttribute('claim_resolution_note', $latestClaim?->resolution_note);
+            $warranty->setAttribute('claim_technician_note', $latestClaim?->technician_note);
 
             return $warranty;
         });
     }
 
-    private function detectSearchType(string $searchQuery): string
+    private function generateClaimNumber(int $warrantyId): string
     {
-        return preg_match('/[A-Za-z-]/', $searchQuery) ? 'serial' : 'phone';
-    }
+        do {
+            $claimNumber = sprintf('CLM-%d-%s', $warrantyId, Str::upper(Str::random(8)));
+        } while (WarrantyClaim::query()->where('claim_number', $claimNumber)->exists());
 
-    private function buildPhoneCandidates(string $searchQuery): array
-    {
-        $trimmed = trim($searchQuery);
-        $normalized = preg_replace('/\D+/', '', $trimmed);
-        $candidates = collect([$trimmed, $normalized])
-            ->filter()
-            ->values();
-
-        if ($normalized && str_starts_with($normalized, '84')) {
-            $candidates->push('0'.substr($normalized, 2));
-        }
-
-        if ($normalized && str_starts_with($normalized, '0')) {
-            $candidates->push('84'.substr($normalized, 1));
-        }
-
-        return $candidates->filter()->unique()->values()->all();
+        return $claimNumber;
     }
 }

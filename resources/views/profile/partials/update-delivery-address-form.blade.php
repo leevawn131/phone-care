@@ -16,7 +16,7 @@
         <button
             type="button"
             @click="editing = true"
-            class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-indigo-300 hover:text-indigo-600"
+            class="btn btn-sm btn-outline-dark rounded-3 px-3"
         >
             {{ __('Chỉnh sửa') }}
         </button>
@@ -106,7 +106,7 @@
 
                 <div>
                     <x-input-label for="address_line" :value="__('Địa chỉ chi tiết')" />
-                    <textarea id="address_line" name="address_line" rows="4" class="mt-1 block w-full rounded-xl border-gray-200 px-4 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Số nhà, tên đường...">{{ old('address_line', $user->address_line) }}</textarea>
+                    <textarea id="address_line" name="address_line" rows="4" class="form-control border-secondary-subtle rounded-3 shadow-none mt-1" placeholder="Số nhà, tên đường...">{{ old('address_line', $user->address_line) }}</textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('address_line')" />
                 </div>
 
@@ -118,11 +118,11 @@
                     <button
                         type="button"
                         @click="editing = false"
-                        class="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
+                        class="btn btn-outline-secondary rounded-3 px-4"
                     >
                         {{ __('Hủy') }}
                     </button>
-                    <x-primary-button class="rounded-xl px-5">{{ __('Lưu địa chỉ') }}</x-primary-button>
+                    <x-primary-button>{{ __('Lưu địa chỉ') }}</x-primary-button>
                 </div>
             </form>
         </div>

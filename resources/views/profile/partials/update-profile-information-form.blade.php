@@ -15,7 +15,7 @@
         <button
             type="button"
             @click="editing = true"
-            class="inline-flex items-center rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-indigo-300 hover:text-indigo-600"
+            class="btn btn-sm btn-outline-dark rounded-3 px-3"
         >
             {{ __('Chỉnh sửa') }}
         </button>
@@ -105,11 +105,11 @@
                     <button
                         type="button"
                         @click="editing = false"
-                        class="rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
+                        class="btn btn-outline-secondary rounded-3 px-4"
                     >
                         {{ __('Hủy') }}
                     </button>
-                    <x-primary-button class="rounded-xl px-5">{{ __('Lưu') }}</x-primary-button>
+                    <x-primary-button>{{ __('Lưu') }}</x-primary-button>
                 </div>
             </form>
         </div>

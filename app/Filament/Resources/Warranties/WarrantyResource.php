@@ -69,7 +69,10 @@ class WarrantyResource extends Resource
         return match ($state) {
             'active' => 'success',
             'expired' => 'danger',
-            'claimed' => 'warning',
+            'pending', 'claimed' => 'warning',
+            'approved', 'received', 'in_progress' => 'info',
+            'rejected' => 'danger',
+            'completed' => 'success',
             default => 'gray',
         };
     }

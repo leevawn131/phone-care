@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Warranty extends Model
 {
@@ -65,5 +66,10 @@ class Warranty extends Model
     public function claims(): HasMany
     {
         return $this->hasMany(WarrantyClaim::class);
+    }
+
+    public function latestClaim(): HasOne
+    {
+        return $this->hasOne(WarrantyClaim::class)->latestOfMany();
     }
 }

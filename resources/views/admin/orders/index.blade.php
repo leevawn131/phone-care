@@ -35,7 +35,7 @@
                                 <p class="text-muted mb-0" style="font-size: 0.875rem;">Total: {{ number_format($order->grand_total) }} VND</p>
                             </div>
 
-                            <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex flex-column flex-sm-row gap-2">
+                            <form method="POST" action="{{ route('legacy-admin.orders.update-status', $order) }}" class="d-flex flex-column flex-sm-row gap-2">
                                 @csrf
                                 @method('PATCH')
                                 <select name="status" class="form-select form-select-sm" style="min-width: 180px;">

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('handled_by')->nullable()->constrained('users')->nullOnDelete();
             $table->string('status', 50)->default('pending')->index();
             $table->text('issue_description');
+            $table->json('attachments')->nullable();
             $table->text('technician_note')->nullable();
             $table->text('resolution_note')->nullable();
             $table->timestamp('received_at')->nullable();
